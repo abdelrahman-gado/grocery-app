@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const catalogRouter = require('./routes/catalog');
 
 const mongoDB =
   "mongodb+srv://abdogado:gedox23101997@cluster0.hexoi.mongodb.net/grocery-app?retryWrites=true&w=majority";
@@ -32,6 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.user('/catalog', catalogRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
