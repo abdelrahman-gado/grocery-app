@@ -3,9 +3,20 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+
+const mongoDB =
+  "mongodb+srv://abdogado:gedox23101997@cluster0.hexoi.mongodb.net/grocery-app?retryWrites=true&w=majority";
+
+mongoose
+  .connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
+
+const db = mongoose.connection;
+
+db.on("error", console.error.bind(console, "Mongo connection error"));
 
 var app = express();
 
