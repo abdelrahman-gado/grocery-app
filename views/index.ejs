@@ -2,10 +2,22 @@
 <html>
   <head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+    <% if (error) { %>
+      <h2>There is an Error in getting categories</h2>
+    <% } else { %>
+      <% if (data.length <= 0) { %>
+        <h2>There are no categories, please create one</h2>
+      <% } else { %>
+        <ul>
+          <% for (const category of data) { %>
+            <li><a href="<%= category.url %>"><%= category.name %></a></li>
+          <% } %>
+        </ul>
+      <% } %>
+    <% } %>
   </body>
 </html>
