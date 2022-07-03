@@ -1,7 +1,10 @@
-const Category = require('../models/category');
+const Category = require("../models/category");
+const Item = require("../models/item");
 
 exports.category_list = function (req, res) {
-  res.send("NOT IMPLEMNETED");
+  Category.find({}, function (err, result) {
+    res.render("index", { title: "Grocery App", error: err, data: result });
+  });
 };
 
 exports.category_detail = function (req, res) {
@@ -31,4 +34,3 @@ exports.category_update_get = function (req, res) {
 exports.category_update_post = function (req, res) {
   res.send("NOT IMPLEMNETED");
 };
-
