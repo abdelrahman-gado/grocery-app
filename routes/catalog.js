@@ -45,3 +45,5 @@ router.post("/item/:id/update", item_controller.item_update_post);
 router.get("/item/:id", item_controller.item_detail);
 
 router.get("/items", item_controller.item_list);
+
+module.exports = router;
