@@ -10,8 +10,15 @@ exports.item_list = function (req, res, next) {
   })
 };
 
-exports.item_detail = function (req, res) {
-  res.send("NOT IMPLEMENTED");
+exports.item_detail = function (req, res, next) {
+  const itemId = req.params.id;
+  Item.findById(itemId).populate('category').exec(function (err, result) {
+    if (err) {
+      return next(err);
+    }
+
+    res.render('item-detail', { itemName: result.name, error: err, data: result });
+  })
 };
 
 exports.item_create_get = function (req, res) {
