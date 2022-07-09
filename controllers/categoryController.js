@@ -11,18 +11,22 @@ exports.category_list = function (req, res) {
 exports.category_detail = function (req, res, next) {
   const categoryId = req.params.id;
   Item.find({ category: categoryId })
-    .populate("category")
+    .populate('category')
     .exec(function (err, result) {
       if (err) {
         return next(err);
       }
 
-      res.render('category-detail', { title: result[0].category.name, data: result });
+      if (result.length <= 0) {
+        res.render("category-detail", { title: "No Category Items", data: result });
+      }
+
+      res.render('category-detail', { title: result[0].category.name,  data: result });
     });
 };
 
 exports.category_create_get = function (req, res) {
-  res.send("NOT IMPLEMNETED");
+  res.render('category-create', { title: "Add Category"});
 };
 
 exports.category_create_post = function (req, res) {
