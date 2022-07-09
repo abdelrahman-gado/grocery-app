@@ -26,7 +26,7 @@ exports.category_detail = function (req, res, next) {
 };
 
 exports.category_create_get = function (req, res) {
-  res.render('category-create', { title: "Add Category"});
+  res.render('category-create', { title: "Add Category" });
 };
 
 exports.category_create_post = function (req, res) {
