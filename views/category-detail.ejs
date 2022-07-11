@@ -10,10 +10,16 @@
   <title><%= title %></title>
 </head>
 <body>
-  <h1><%= title %> Category Details</h1>
   <% if (data.length <= 0) { %>
+    <h1>
+      No Category Items
+    </h1>
     <h2>There is no data. Please add items</h2>
+    <a href="/catalog/item/create"> Create an item</a>
   <% } else { %>
+    <h1>
+      <%= title %> Category Details
+    </h1>
     <table class="table my-4 mx-4">
       <tr>
         <th>Item Name</th>
