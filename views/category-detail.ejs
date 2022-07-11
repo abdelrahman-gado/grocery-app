@@ -38,6 +38,10 @@
     </table>
   <% } %>
 
+  <a class="btn btn-primary" href="<%= category.url %>/update"> Update Category </a>
+  <form action="<%= category.url %>/delete" method="POST" style="display:inline">
+    <input type="submit" class="btn btn-danger" name="delete" value="Delete Category" />
+  </form>
 
   <!-- JavaScript Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
