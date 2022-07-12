@@ -18,7 +18,7 @@
   <h1>
     <%= title %>
   </h1>
-  <form action="/item/create" method="POST">
+  <form action="/catalog/item/create" method="POST">
     <div class="mb-3">
       <label for="item-name" class="form-label">Item Name: </label>
       <input id="item-name" class="form-control" type="text" name="itemName" placeholder="Enter Item Name"
@@ -32,8 +32,8 @@
     <div class="mb-3">
       <label for="item-category" class="form-label">Category: </label>
       <select id="item-category" class="form-select" required>
-        <% for (category of data) { %>
-          <option value="<%= category.name %>"> <%= category.name %> </option>
+        <% for (const category of data) { %>
+          <option value="<%= category._id %>"> <%= category.name %> </option>
         <% } %>
       </select>
     </div>
