@@ -113,8 +113,15 @@ exports.category_delete_get = function (req, res) {
   res.send("NOT IMPLEMNETED");
 };
 
-exports.category_delete_post = function (req, res) {
-  res.send("NOT IMPLEMNETED");
+exports.category_delete_post = function (req, res, next) {
+  const categoryId = req.params.id;
+  Category.deleteOne({ _id: categoryId }).exec(function (err) {
+    if (err) {
+      return next(err);
+    }
+
+    res.redirect("/catalog");
+  });
 };
 
 exports.category_update_get = function (req, res) {
