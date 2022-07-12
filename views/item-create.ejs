@@ -31,7 +31,7 @@
     </div>
     <div class="mb-3">
       <label for="item-category" class="form-label">Category: </label>
-      <select id="item-category" class="form-select" required>
+      <select id="item-category" class="form-select" name="itemCategory" required>
         <% for (const category of data) { %>
           <option value="<%= category._id %>"> <%= category.name %> </option>
         <% } %>
