@@ -22,23 +22,21 @@
     <div class="mb-3">
       <label for="item-name" class="form-label">Item Name: </label>
       <input id="item-name" class="form-control" type="text" name="itemName" placeholder="Enter Item Name"
-        value="<%= (!Array.isArray(data)) ? data.name : `` %>" required>
+        value="<%= (data !== undefined) ? data.name : `` %>" required>
     </div>
     <div class="mb-3">
       <label for="item-description" class="form-label">Item Description: </label>
       <input id="item-description" class="form-control" type="text" name="itemDescr"
-        placeholder="Enter Item Description" value="<%= (!Array.isArray(data)) ? data.description : `` %>" required>
+        placeholder="Enter Item Description" value="<%= (data !== undefined) ? data.description : `` %>" required>
     </div>
     <div class="mb-3">
       <label for="item-category" class="form-label">Category: </label>
       <select id="item-category" class="form-select" name="itemCategory" required>
-        <% if (!Array.isArray(data))  { %>
-          <option value="<%= data._id %>">
-            <%= data.name %>
-          </option>
-        <% } else { %>
-          <% for (const category of data) { %>
-            <option value="<%= category._id %>"> <%= category.name %> </option>
+          <% for (const category of categories) { %>
+            <% if (data !== undefined && category._id.equals(data.category._id)) { %>
+                <option value="<%= category._id %>" selected> <%= category.name %> </option>
+            <% } else { %>
+                <option value="<%= category._id %>"> <%= category.name %> </option>
           <% } %>
         <% } %>
       </select>
@@ -46,12 +44,12 @@
     <div class="mb-3">
       <label for="item-price" class="form-label">Item Price (per kg): </label>
       <input id="item-price" class="form-control" type="number" name="itemPrice" placeholder="Enter Price Of Item (per kg)"
-        value="<%= (!Array.isArray(data)) ? data.price : `` %>" required>
+        value="<%= (data !== undefined) ? data.price : `` %>" required>
     </div>
     <div class="mb-3">
       <label for="item-stock-number" class="form-label">Number In Stock: </label>
       <input id="item-stock-number" class="form-control" type="number" name="numberInStock" placeholder="Enter Number In Stock"
-        value="<%= (!Array.isArray(data)) ? data.number_in_stock : `` %>" required>
+        value="<%= (data !== undefined) ? data.number_in_stock : `` %>" required>
     </div>
       <input type="submit" class="btn btn-primary my-3" id="submit-btn" value="<%= (updated) ? "Update" : "Submit" %>">
   </form>
