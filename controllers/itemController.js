@@ -41,7 +41,13 @@ exports.item_create_get = function (req, res, next) {
         return next(err);
       }
 
-      res.render("item-create", { title: "Add Item", data: result, errors: undefined });
+      res.render("item-create", {
+        updated: false,
+        formAction: req.url,
+        title: "Add Item",
+        data: result,
+        errors: undefined,
+      });
     });
 };
 
@@ -87,7 +93,7 @@ exports.item_create_post = [
             return next(err);
           }
 
-          res.render("item-create", { title: "Add Item", data: result, errors: errors.array() });
+          res.render("item-create", { updated: false, formAction: req.url, title: "Add Item", data: result, errors: errors.array() });
         });
       return;
       
@@ -104,6 +110,7 @@ exports.item_create_post = [
   },
 ];
 
+// Not used in this version
 exports.item_delete_get = function (req, res) {
   res.send("NOT IMPLEMENTED");
 };
@@ -119,8 +126,21 @@ exports.item_delete_post = function (req, res, next) {
   });
 };
 
-exports.item_update_get = function (req, res) {
-  res.send("NOT IMPLEMENTED");
+exports.item_update_get = function (req, res, next) {
+  const itemId = req.params.id;
+  Item.findOne({ _id: itemId }).exec(function (err, result) {
+    if (err) {
+      return next(err);
+    }
+
+    if (result === null) {
+      const err = new Error("Item not found");
+      err.status = 404;
+      return next(err);
+    }
+
+    res.render("item-create", { updated: true, formAction: req.url, title: "Update Item", errors: undefined, data: result })
+  })
 };
 
 exports.item_update_post = function (req, res) {
