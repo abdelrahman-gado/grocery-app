@@ -52,7 +52,7 @@ exports.category_detail = function (req, res, next) {
 };
 
 exports.category_create_get = function (req, res) {
-  res.render("category-create", { title: "Add Category", errors: undefined });
+  res.render("category-create", { title: "Add Category", errors: undefined, data: undefined});
 };
 
 exports.category_create_post = [
@@ -109,6 +109,7 @@ exports.category_create_post = [
   },
 ];
 
+// Not used in this version
 exports.category_delete_get = function (req, res) {
   res.send("NOT IMPLEMNETED");
 };
@@ -124,8 +125,21 @@ exports.category_delete_post = function (req, res, next) {
   });
 };
 
-exports.category_update_get = function (req, res) {
-  res.send("NOT IMPLEMNETED");
+exports.category_update_get = function (req, res, next) {
+  const categoryId = req.params.id;
+  Category.findOne({ _id: categoryId }).exec(function (err, result) {
+    if (err) {
+      return next(err);
+    }
+
+    if (result === null) {
+      const err = new Error("Category not found");
+      err.status = 404;
+      return next(err);
+    }
+
+    res.render('category-create', { title: "Update Category", errors: undefined, data: result });
+  });
 };
 
 exports.category_update_post = function (req, res) {
