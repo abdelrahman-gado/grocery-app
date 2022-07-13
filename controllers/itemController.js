@@ -45,8 +45,9 @@ exports.item_create_get = function (req, res, next) {
         updated: false,
         formAction: req.url,
         title: "Add Item",
-        data: result,
+        categories: result,
         errors: undefined,
+        data: undefined
       });
     });
 };
@@ -93,7 +94,7 @@ exports.item_create_post = [
             return next(err);
           }
 
-          res.render("item-create", { updated: false, formAction: req.url, title: "Add Item", data: result, errors: errors.array() });
+          res.render("item-create", { updated: false, formAction: req.url, title: "Add Item", categories: result, errors: errors.array(), data: undefined });
         });
       return;
       
@@ -128,19 +129,26 @@ exports.item_delete_post = function (req, res, next) {
 
 exports.item_update_get = function (req, res, next) {
   const itemId = req.params.id;
-  Item.findOne({ _id: itemId }).exec(function (err, result) {
-    if (err) {
-      return next(err);
-    }
 
-    if (result === null) {
+  // get item and all categories
+  async.parallel({
+    categories: function (callback) {
+      Category.find({}).exec(callback);
+    },
+    item: function (callback) {
+      Item.findOne({ _id: itemId }).populate('category').exec(callback);
+    }
+  }, function (err, result) {
+    if (err) { return next(err); }
+
+    if (result.item === null) {
       const err = new Error("Item not found");
       err.status = 404;
       return next(err);
     }
 
-    res.render("item-create", { updated: true, formAction: req.url, title: "Update Item", errors: undefined, data: result })
-  })
+    res.render("item-create", { updated: true, formAction: req.url, title: "Update Item", errors: undefined, data: result.item, categories: result.categories })
+  });
 };
 
 exports.item_update_post = function (req, res) {
