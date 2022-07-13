@@ -169,7 +169,27 @@ exports.category_update_post = [
     });
 
     if (!errors.isEmpty()) {
-      console.log(errors);
+      
+      Category.findOne({ _id: categoryId }).exec(function (err, result) {
+        if (err) {
+          return next(err);
+        }
+
+        if (result === null) {
+          const err = new Error("Category not found");
+          err.status = 404;
+          return next(err);
+        }
+
+        res.render("category-create", {
+          updated: true,
+          formAction: req.url,
+          title: "Update Category",
+          errors: undefined,
+          data: result,
+        });
+      });
+      
       return;
     } else {
       Category.findByIdAndUpdate(categoryId, updatedCategory, {}).exec(function (err, theCategory) {
