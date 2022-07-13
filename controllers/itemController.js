@@ -47,7 +47,7 @@ exports.item_create_get = function (req, res, next) {
         title: "Add Item",
         categories: result,
         errors: undefined,
-        data: undefined
+        data: undefined,
       });
     });
 };
@@ -72,7 +72,6 @@ exports.item_create_post = [
 
   // Process request after validation and sanitization
   function (req, res, next) {
-
     const errors = validationResult(req);
 
     const newItem = new Item({
@@ -94,10 +93,16 @@ exports.item_create_post = [
             return next(err);
           }
 
-          res.render("item-create", { updated: false, formAction: req.url, title: "Add Item", categories: result, errors: errors.array(), data: undefined });
+          res.render("item-create", {
+            updated: false,
+            formAction: req.url,
+            title: "Add Item",
+            categories: result,
+            errors: errors.array(),
+            data: undefined,
+          });
         });
       return;
-      
     } else {
       // Data from the form is valid. Save new Item.
       newItem.save(function (err) {
@@ -131,26 +136,119 @@ exports.item_update_get = function (req, res, next) {
   const itemId = req.params.id;
 
   // get item and all categories
-  async.parallel({
-    categories: function (callback) {
-      Category.find({}).exec(callback);
+  async.parallel(
+    {
+      categories: function (callback) {
+        Category.find({}).exec(callback);
+      },
+      item: function (callback) {
+        Item.findOne({ _id: itemId }).populate("category").exec(callback);
+      },
     },
-    item: function (callback) {
-      Item.findOne({ _id: itemId }).populate('category').exec(callback);
-    }
-  }, function (err, result) {
-    if (err) { return next(err); }
+    function (err, result) {
+      if (err) {
+        return next(err);
+      }
 
-    if (result.item === null) {
-      const err = new Error("Item not found");
-      err.status = 404;
-      return next(err);
-    }
+      if (result.item === null) {
+        const err = new Error("Item not found");
+        err.status = 404;
+        return next(err);
+      }
 
-    res.render("item-create", { updated: true, formAction: req.url, title: "Update Item", errors: undefined, data: result.item, categories: result.categories })
-  });
+      res.render("item-create", {
+        updated: true,
+        formAction: req.url,
+        title: "Update Item",
+        errors: undefined,
+        data: result.item,
+        categories: result.categories,
+      });
+    }
+  );
 };
 
-exports.item_update_post = function (req, res) {
-  res.send("NOT IMPLEMENTED");
-};
+exports.item_update_post = [
+  // Validate and sanitize fields.
+  body("itemName", "Item name must be specified")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+
+  body("itemDescr", "Item Description must be specified")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+
+  body("itemCategory.*").escape(),
+
+  body("itemPrice", "Item price must be specified"),
+
+  body("numberInStock", "Item number of stock must specified"),
+
+  // Process request after validation and sanitization
+  function (req, res, next) {
+    const itemId = req.params.id;
+
+    const errors = validationResult(req);
+
+    const updatedItem = new Item({
+      name: req.body["itemName"],
+      description: req.body["itemDescr"],
+      category: req.body["itemCategory"],
+      price: Number(req.body["itemPrice"]),
+      number_in_stock: Number(req.body["numberInStock"]),
+      _id: req.params.id, // This is required, or a new ID will be assigned!
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with errors
+
+      // get item and all categories
+      async.parallel(
+        {
+          categories: function (callback) {
+            Category.find({}).exec(callback);
+          },
+          item: function (callback) {
+            Item.findOne({ _id: itemId }).populate("category").exec(callback);
+          },
+        },
+        function (err, result) {
+          if (err) {
+            return next(err);
+          }
+
+          if (result.item === null) {
+            const err = new Error("Item not found");
+            err.status = 404;
+            return next(err);
+          }
+
+          res.render("item-create", {
+            updated: true,
+            formAction: req.url,
+            title: "Update Item",
+            errors: errors.array(),
+            data: result.item,
+            categories: result.categories,
+          });
+        }
+      );
+
+      return;
+    } else {
+      Item.findByIdAndUpdate(itemId, updatedItem, {}).exec(function (
+        err,
+        theItem
+      ) {
+
+        if (err) {
+          return next(err);
+        }
+
+        res.redirect(theItem.url);
+      });
+    }
+  },
+];
