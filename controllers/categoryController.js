@@ -52,7 +52,7 @@ exports.category_detail = function (req, res, next) {
 };
 
 exports.category_create_get = function (req, res) {
-  res.render("category-create", { title: "Add Category", errors: undefined, data: undefined});
+  res.render("category-create", { updated: false, formAction: req.url, title: "Add Category", errors: undefined, data: undefined});
 };
 
 exports.category_create_post = [
@@ -138,10 +138,49 @@ exports.category_update_get = function (req, res, next) {
       return next(err);
     }
 
-    res.render('category-create', { title: "Update Category", errors: undefined, data: result });
+    res.render('category-create', { updated: true, formAction: req.url, title: "Update Category", errors: undefined, data: result });
   });
 };
 
-exports.category_update_post = function (req, res) {
-  res.send("NOT IMPLEMNETED");
-};
+exports.category_update_post = [
+  // Validate and sanitize
+  body("categoryName", "Category name required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  
+  body("categoryDescr", "Category Description required")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  
+  // Process request after validation and sanitization
+  function (req, res, next) {
+
+    const categoryId = req.params.id;
+
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    const updatedCategory = new Category({
+      _id: categoryId,   // This is required, or a new ID will be assigned!
+      name: req.body.categoryName,
+      description: req.body.categoryDescr,
+    });
+
+    if (!errors.isEmpty()) {
+      console.log(errors);
+      return;
+    } else {
+      Category.findByIdAndUpdate(categoryId, updatedCategory, {}).exec(function (err, theCategory) {
+        if (err) {
+          return next(err);
+        }
+
+
+        res.redirect(theCategory.url);
+      })
+    }
+
+  }
+];
